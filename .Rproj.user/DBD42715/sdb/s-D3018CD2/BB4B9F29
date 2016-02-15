@@ -1,0 +1,19 @@
+{
+    "contents" : "library(caret)\n\n#'read data\ntrain <- read.csv(\"pml-training.csv\")\ntest <- read.csv(\"pml-testing.csv\")\n\n#'peek our data\ndim(train)\ndim(test)\n\n#'what type of results we have\ntable(train$classe)\n\n\n#'having same results each time\nset.seed(131)\n\n#'parition data for training and testing sets\n\ninTrain <- createDataPartition(train$classe, p = 0.7, list = FALSE)\ndata.train <- train[inTrain, ]\ndata.valid <- train[-inTrain, ]\n\n#'preprocess data\n\n#'remove zerovariance data\nnearZero <- nearZeroVar(data.train)\ndata.train <- subset(data.train,select = -c(nearZero))\ntest <- subset(test,select = -c(nearZero))\n\n\n#'remove uncomplete observations\n#data.train<-na.omit(data.train)\n#'using random forest for training data\nlibrary(randomForest)\nrandForestModel <- randomForest(classe ~ ., data = data.train, importance = TRUE, ntrees = 10)\n\ndata.predict <- predict(randForestModel,data.train)\nprint(confusionMatrix(data.predict, data.train$classe))\n#'The result of the model are great. We shall validate the result by using cross-validation\ndata.predictT <- predict(randForestModel,data.valid)\nprint(confusionMatrix(data.predictT, data.valid$classe))\n\n#'accuracy is 94%  so our model went great als  with validation set havint 5% sample-out error\n\n#' Prediction of algorithm\npred <- predict(randForestModel,test)\npred\n#'writing predicted data to a file\nwrite(pred,\"pred.txt\")\n\n",
+    "created" : 1455567537943.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2914568608",
+    "id" : "BB4B9F29",
+    "lastKnownWriteTime" : 1455579228,
+    "path" : "~/finalproj/final.R",
+    "project_path" : "final.R",
+    "properties" : {
+        "notebook_format" : "html_document",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : true,
+    "type" : "r_source"
+}
